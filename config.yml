@@ -19,7 +19,13 @@ database:
     # Heslo DB
     password: toor
     # Adresa DB
-    url: jdbc:mysql://localhost:3306/bakalarka
+    url: jdbc:mysql://localhost:3306/bakalarka    
+    properties:
+        charSet: UTF-8
+        characterEncoding: UTF-8
+        characterDecoding: UTF-8
+        useUnicode: false
+        hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     
 # Nastavenia Jersey
 jerseyClient:
@@ -28,3 +34,10 @@ jerseyClient:
     # Pocet asynchronnych requestov
     workQueueSize: 25
 
+
+# Zaznamy dopytov na databazu
+#   logging:
+#       level: INFO
+#       loggers:
+#           org.hibernate.SQL:
+#               level: DEBUG

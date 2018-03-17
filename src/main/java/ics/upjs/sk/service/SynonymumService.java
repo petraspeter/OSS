@@ -16,16 +16,12 @@ import java.util.Scanner;
  */
 public class SynonymumService {
     
-    private final double SYNONYMICKA_VAHA = 0.93;
+    private final double SYNONYMICKA_VAHA = 0.95;
     
     private final SynonymumDao synonymumDao;
     
     public SynonymumService(SynonymumDao synonymumDao) {
         this.synonymumDao = synonymumDao;
-    }
-    
-    public List<SynonymumDto> vratVsetkySynonyma() {
-        return new SynonymumDto().vratDTOSynonym(synonymumDao.findAll());
     }
     
     public SynonymumDto najdiPodlaId(Long id) {

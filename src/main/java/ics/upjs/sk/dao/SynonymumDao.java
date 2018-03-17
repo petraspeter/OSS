@@ -21,10 +21,6 @@ public class SynonymumDao extends AbstractDAO<Synonymum> {
         return this.persist(synonymum);
     }
     
-    public List<Synonymum> findAll() {
-        return list(currentSession().createCriteria(Synonymum.class));
-    }
-    
     public Synonymum najdiPodlaId(Long id) {
         return uniqueResult(currentSession().createCriteria(Synonymum.class)
                 .add(Restrictions.eq("id", id))
@@ -43,20 +39,14 @@ public class SynonymumDao extends AbstractDAO<Synonymum> {
                 .add(Restrictions.eq("slovo", clen))
                 .add(Restrictions.isNull("definicia"))
         );
-        clen = "%;" + clen + ";%";
-        System.out.println(clen);
-        clenovia.addAll(list(currentSession().createCriteria(Synonymum.class)
-                .add(Restrictions.like("synonyma", clen))
-                .add(Restrictions.isNotNull("definicia"))
-        ));       
         List<Synonymum> vysledok = new ArrayList<>();
         for (Synonymum synonymum : clenovia) {
-            vysledok.addAll(najdiDominanty(synonymum.getSynonyma()));
+            vysledok.addAll(najdiDominanty(synonymum.getSynonyma().substring(1,synonymum.getSynonyma().length() - 1)));
         }
         
         return vysledok;
     }
-
+    
     
     
 }

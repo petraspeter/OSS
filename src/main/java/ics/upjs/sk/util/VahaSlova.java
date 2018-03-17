@@ -1,13 +1,17 @@
 package ics.upjs.sk.util;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  *
  * @author peter
  */
 public class VahaSlova {
 
+    @JsonProperty("slovo")
     private String slovo;
     
+    @JsonProperty("vaha")
     private Double vaha;
 
     public VahaSlova() {

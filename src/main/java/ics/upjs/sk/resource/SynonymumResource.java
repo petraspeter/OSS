@@ -27,14 +27,6 @@ public class SynonymumResource {
     }
     
     @GET
-    @Path("")
-    @UnitOfWork
-    public Response vratVsetkySynonyma() {
-        List<SynonymumDto> synonyma = synonymumService.vratVsetkySynonyma();
-        return Response.ok(synonyma).build();
-    }
-    
-    @GET
     @Path("/id")
     @UnitOfWork
     public Response najdiPodlaId(
@@ -60,6 +52,9 @@ public class SynonymumResource {
     public Response vratSynoynmickyRad(
             @QueryParam("slovo") String slovo
     ) {
+        for (int i = 0; i < slovo.length(); i++) {
+            System.out.println(slovo.charAt(i));
+        }
         List<VahaSlova> synonyma = synonymumService.vypocitajHodnotySynonym(slovo);
         return Response.ok(synonyma).build();
     }
