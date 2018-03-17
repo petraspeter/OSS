@@ -34,6 +34,13 @@ public class SynonymumDao extends AbstractDAO<Synonymum> {
         );
     }
     
+    public List<Synonymum> najdiClenovRadu(String slovo) {
+        return list(currentSession().createCriteria(Synonymum.class)
+                .add(Restrictions.eq("slovo", slovo))
+                .add(Restrictions.isNull("definicia"))
+        );
+    }
+    
     public List<Synonymum> najdiClenovRaduPodlaSlova(String clen) {
         List<Synonymum> clenovia = list(currentSession().createCriteria(Synonymum.class)
                 .add(Restrictions.eq("slovo", clen))

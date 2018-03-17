@@ -32,6 +32,10 @@ public class SynonymumService {
         return new SynonymumDto().vratDTOSynonym(synonymumDao.najdiDominanty(dominanta));
     }
     
+    public List<SynonymumDto> vratClenovRadu(String slovo) {
+        return new SynonymumDto().vratDTOSynonym(synonymumDao.najdiClenovRadu(slovo));        
+    }
+    
     public List<SynonymumDto> vratSynonymickeRady(String slovo) {
         List<SynonymumDto> vysledok = new SynonymumDto().vratDTOSynonym(
                 synonymumDao.najdiDominanty(slovo));
@@ -43,34 +47,54 @@ public class SynonymumService {
     public List<VahaSlova> vypocitajHodnotySynonym(String slovo) {
         List<VahaSlova> vyslednyZoznam = new ArrayList<>();
         List<Synonymum> dominanta = synonymumDao.najdiDominanty(slovo);
-        List<Synonymum> clenRadu =  synonymumDao.najdiClenovRaduPodlaSlova(slovo);
+        List<Synonymum> clenRadu =  synonymumDao.najdiClenovRadu(slovo);
         for (Synonymum synonymum : dominanta) {
             vyslednyZoznam.addAll(vypocitajVahyDominanty(synonymum.getSynonyma()));
         }
         for (Synonymum synonymum : clenRadu) {
-            vyslednyZoznam.addAll(vypocitajVahyClenaRadu(synonymum.getSynonyma(), slovo, synonymum.getSlovo()));
+            vyslednyZoznam.addAll(vypocitajVahyClenaRadu(synonymum));
         }
         return vyslednyZoznam;
     }
     
-    private List<VahaSlova> vypocitajVahyClenaRadu(String synonyma, String clenRadu, String dominanta) {
+    private List<VahaSlova> vypocitajVahyClenaRadu(Synonymum slovo) {
         List<VahaSlova> vyslednyZoznam = new ArrayList<>();
-        Scanner citacSynonyma = new Scanner(synonyma);
+        List<Synonymum> dominanty = synonymumDao.najdiDominanty(slovo.getSynonyma());
+        for (Synonymum dominanta : dominanty) {  
+            vyslednyZoznam.addAll(vypocitajVahyPreClenaRaduNaZakladeDominanty(dominanta, slovo.getSlovo()));
+        }
+        return vyslednyZoznam;
+    }
+    
+    private List<VahaSlova> vypocitajVahyPreClenaRaduNaZakladeDominanty(Synonymum dominanta, String slovo) {
+        List<VahaSlova> vyslednyZoznam = new ArrayList<>();
+        vyslednyZoznam.add(new VahaSlova(dominanta.getSlovo(), 1.0));
+        double vahaClenaRadu = 1;
+        int indexDo = 0;
+        boolean pocitajHned = false;
+        Scanner citacSynonyma = new Scanner(dominanta.getSynonyma());
         citacSynonyma.useDelimiter(";");
         double vaha = 1;
-        double hodnotaClena = 0;
-        vyslednyZoznam.add(new VahaSlova(dominanta, 1.0));
         while(citacSynonyma.hasNext()) {
-            String slovo = citacSynonyma.next();
+            String synonymum = citacSynonyma.next();
             vaha = vaha * SYNONYMICKA_VAHA;
-            if(!clenRadu.equals(slovo)) {
-                vyslednyZoznam.add(new VahaSlova(slovo, vaha));
+            if(synonymum.equals(slovo)) {
+                pocitajHned = true;
+                vyslednyZoznam.get(0).setVaha(vaha);
+                vahaClenaRadu = vaha;
+                continue;
+            }
+            if(pocitajHned) {
+                vyslednyZoznam.add(new VahaSlova(synonymum, vaha * vahaClenaRadu));
             } else {
-                hodnotaClena = vaha;
+                vyslednyZoznam.add(new VahaSlova(synonymum, vaha));
+                indexDo++;
             }
         }
-        for (VahaSlova vahaSlova : vyslednyZoznam) {
-            vahaSlova.setVaha(vahaSlova.getVaha() * hodnotaClena);
+        if(indexDo > 0) {
+            for (int i = 1; i < indexDo; i++) {
+                vyslednyZoznam.get(i).setVaha(vyslednyZoznam.get(i).getVaha() * vahaClenaRadu);
+            }
         }
         return vyslednyZoznam;
     }

@@ -47,6 +47,17 @@ public class SynonymumResource {
     }
     
     @GET
+    @Path("/clen_radu")
+    @UnitOfWork
+    public Response vratClenaRadu(
+            @QueryParam("slovo") String slovo
+    ) {
+        List<SynonymumDto> synonyma = synonymumService.vratClenovRadu(slovo);
+        return Response.ok(synonyma).build();
+    }
+    
+    
+    @GET
     @Path("/synonymicky_rad")
     @UnitOfWork
     public Response vratSynoynmickyRad(
