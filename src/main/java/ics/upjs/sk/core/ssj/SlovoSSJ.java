@@ -1,5 +1,6 @@
 package ics.upjs.sk.core.ssj;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,7 +19,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "ssj_slovo")
-public class SlovoSSJ {
+public class SlovoSSJ implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
