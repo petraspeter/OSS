@@ -2,6 +2,7 @@ package ics.upjs.sk.dao;
 
 import ics.upjs.sk.core.ssj.SlovoSSJ;
 import io.dropwizard.hibernate.AbstractDAO;
+import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -37,18 +38,27 @@ public class SsjDao  extends AbstractDAO<SlovoSSJ> {
     }
     
     public List<SlovoSSJ> najdiVsetkySynonymaSlova(Long idVyznam, Long idSlova) {
-        return currentSession().createCriteria(SlovoSSJ.class)
-                .add(Restrictions.eq("id_vyznam", idVyznam))
-                .add(Restrictions.not(Restrictions.eq("id", idSlova)))
-                .list();
+        List<SlovoSSJ> slova = currentSession().createCriteria(SlovoSSJ.class)
+                .add(Restrictions.eq("idVyznam", idVyznam)).list();
+        List<SlovoSSJ> vysledneSlova = new ArrayList<>();
+        for (SlovoSSJ slovoSSJ : slova) {
+            if(!slovoSSJ.getId().equals(idSlova)) {
+                vysledneSlova.add(slovoSSJ);
+            }
+        }
+        return vysledneSlova;
     }
     
-    public List<SlovoSSJ> najdiVsetkySuvisiaceSlova(Long idVyznam, Long idSlova, Long idSkupina) {
-        return currentSession().createCriteria(SlovoSSJ.class)
-                .add(Restrictions.eq("id_skupina", idSkupina))
-                .add(Restrictions.not(Restrictions.eq("id_vyznam", idVyznam)))
-                .add(Restrictions.not(Restrictions.eq("id", idSlova)))
-                .list();
+    public List<SlovoSSJ> najdiVsetkySuvisiaceSlova(Long idVyznam, Long idSkupina) {
+        List<SlovoSSJ> slova = currentSession().createCriteria(SlovoSSJ.class)
+                .add(Restrictions.eq("idSkupina", idVyznam)).list();
+        List<SlovoSSJ> vysledneSlova = new ArrayList<>();
+        for (SlovoSSJ slovoSSJ : slova) {
+            if(!slovoSSJ.getIdVyznam().equals(idVyznam)) {
+                vysledneSlova.add(slovoSSJ);
+            }
+        }
+        return vysledneSlova;
     }
-        
+    
 }

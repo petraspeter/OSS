@@ -54,12 +54,13 @@ public class SSJService {
         List<SlovoSSJ> vyhladaneSlova = ssjDao.najdiSlovo(slovo);
         for (SlovoSSJ slovoSSJ : vyhladaneSlova) {
             for (MorfologickaDefiniciaSSJ morfologickeDefinicieSSJ : slovoSSJ.getDefinicie()) {
+                System.out.println(morfologickeDefinicieSSJ.toString());
                 vyslednyZoznam.add(vypocitajVahuDefinicie(morfologickeDefinicieSSJ));
             }
             vyslednyZoznam.add(vypocitajVahuVyznamovoTotoznychSlov(
                     ssjDao.najdiVsetkySynonymaSlova(slovoSSJ.getIdVyznam(), slovoSSJ.getId())));
             vyslednyZoznam.add(vypocitajVahuSkupinovoSuvisiacichSlov(
-                    ssjDao.najdiVsetkySuvisiaceSlova(slovoSSJ.getIdVyznam(), slovoSSJ.getId(), slovoSSJ.getIdSkupina())));
+                    ssjDao.najdiVsetkySuvisiaceSlova(slovoSSJ.getIdVyznam(), slovoSSJ.getIdSkupina())));
         }
         return vyslednyZoznam;
     }
@@ -151,7 +152,7 @@ public class SSJService {
         List<VahaSlova> vyslednyZoznam = new ArrayList<>();
         Scanner citacSlov = new Scanner(slova);
         citacSlov.useDelimiter(";");
-        while (citacSlov.hasNext()) {            
+        while (citacSlov.hasNext()) {
             vyslednyZoznam.add(new VahaSlova(citacSlov.next(), koeficientSlovnehoDruhu));
             // pridat sem slovny druh
             // vyslednyZoznam.add(new VahaSlova(citacSlov.next(), koeficientSlovnehoDruhu, ""));
