@@ -3,14 +3,17 @@ package ics.upjs.sk.oss;
 import ics.upjs.sk.core.scs.DefiniciaSCS;
 import ics.upjs.sk.core.scs.SlovoSCS;
 import ics.upjs.sk.core.ssj.DefiniciaSSJ;
+import ics.upjs.sk.core.ssj.MorfologickaDefiniciaSSJ;
 import ics.upjs.sk.core.ssj.SlovoSSJ;
 import ics.upjs.sk.core.synonyma.Synonymum;
 import ics.upjs.sk.dao.ScsDao;
 import ics.upjs.sk.dao.SsjDao;
 import ics.upjs.sk.dao.SynonymumDao;
 import ics.upjs.sk.resource.OssResource;
+import ics.upjs.sk.resource.SSJResource;
 import ics.upjs.sk.resource.SynonymumResource;
 import ics.upjs.sk.service.OssService;
+import ics.upjs.sk.service.SSJService;
 import ics.upjs.sk.service.SynonymumService;
 import io.dropwizard.Application;
 import io.dropwizard.client.JerseyClientBuilder;
@@ -31,12 +34,20 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
  */
 public class OSSApplication extends Application<OSSConfiguration> {
     
+    /********************************************************************************************************************
+     ********************************************************************************************************************
+     ***************************************** PRIDAT KAZDU NOVU ENTITU *****************************************
+     ******************************** ABY HIBERNATE VEDEL NAMAPOVAT ENTITU ********************************
+     ********************************************************************************************************************
+     *******************************************************************************************************************/
+    
     private final HibernateBundle<OSSConfiguration> hibernateBundle = new HibernateBundle<OSSConfiguration>(
             Synonymum.class,
             SlovoSCS.class,
             DefiniciaSCS.class,
             SlovoSSJ.class,
-            DefiniciaSSJ.class
+            DefiniciaSSJ.class,
+            MorfologickaDefiniciaSSJ.class
     ) {
         @Override
         public DataSourceFactory getDataSourceFactory(OSSConfiguration configuration) {
@@ -72,6 +83,7 @@ public class OSSApplication extends Application<OSSConfiguration> {
          * Create Setvice's (for now just one)
          */
         final SynonymumService synonymumService= new SynonymumService(synonymumDao);
+        final SSJService ssjService = new SSJService(ssjDao);
         final  OssService ossService = new OssService(scsDao, ssjDao, synonymumDao);
         
         /**
@@ -83,6 +95,7 @@ public class OSSApplication extends Application<OSSConfiguration> {
                 .build(getName());
         environment.jersey().register(new OssResource(ossService));
         environment.jersey().register(new SynonymumResource(synonymumService));
+        environment.jersey().register(new SSJResource(ssjService));
         
         /**
          * Create CORS headers

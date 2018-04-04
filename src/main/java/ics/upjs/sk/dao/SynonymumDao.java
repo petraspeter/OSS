@@ -28,32 +28,21 @@ public class SynonymumDao extends AbstractDAO<Synonymum> {
     }
     
     public List<Synonymum> najdiDominanty(String dominanta) {
-        return list(currentSession().createCriteria(Synonymum.class)
-                .add(Restrictions.eq("slovo", dominanta))
-                .add(Restrictions.isNotNull("definicia"))
-        );
+        List<Synonymum> dominanty = new ArrayList<>();
+        List<Synonymum> docasnyZoznam = currentSession().createCriteria(Synonymum.class)
+                .add(Restrictions.like("slovo", dominanta))
+                .list();
+        for (Synonymum synonymum : docasnyZoznam) {
+            if(synonymum.getSynonyma().contains(";")) dominanty.add(synonymum);
+        }
+        return dominanty;
     }
     
     public List<Synonymum> najdiClenovRadu(String slovo) {
-        return list(currentSession().createCriteria(Synonymum.class)
-                .add(Restrictions.eq("slovo", slovo))
-                .add(Restrictions.isNull("definicia"))
-        );
+        slovo = "%" + slovo + ";%";
+        return currentSession().createCriteria(Synonymum.class)
+                .add(Restrictions.like("synonyma", slovo))
+                .list();
     }
-    
-    public List<Synonymum> najdiClenovRaduPodlaSlova(String clen) {
-        List<Synonymum> clenovia = list(currentSession().createCriteria(Synonymum.class)
-                .add(Restrictions.eq("slovo", clen))
-                .add(Restrictions.isNull("definicia"))
-        );
-        List<Synonymum> vysledok = new ArrayList<>();
-        for (Synonymum synonymum : clenovia) {
-            vysledok.addAll(najdiDominanty(synonymum.getSynonyma().substring(1,synonymum.getSynonyma().length() - 1)));
-        }
-        
-        return vysledok;
-    }
-    
-    
     
 }

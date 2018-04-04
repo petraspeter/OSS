@@ -1,6 +1,7 @@
 package ics.upjs.sk.core.ssj;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,7 +40,7 @@ public class SlovoSSJ implements Serializable {
     @JoinTable(name = "ssj_vazba", joinColumns = {
         @JoinColumn(name = "id_slovo") }, inverseJoinColumns = {
             @JoinColumn(name = "id_definicia") })    
-    private Set<DefiniciaSSJ> definicie;
+    private Set<MorfologickaDefiniciaSSJ> definicie;
     
     public Long getId() {
         return id;
@@ -73,11 +74,11 @@ public class SlovoSSJ implements Serializable {
         this.idVyznam = idVyznam;
     }
     
-    public Set<DefiniciaSSJ> getDefinicie() {
+    public Set<MorfologickaDefiniciaSSJ> getDefinicie() {
         return definicie;
     }
     
-    public void setDefinicie(Set<DefiniciaSSJ> definicie) {
+    public void setDefinicie(Set<MorfologickaDefiniciaSSJ> definicie) {
         this.definicie = definicie;
     }
     
@@ -105,7 +106,7 @@ public class SlovoSSJ implements Serializable {
         this.idSkupina = idSkupina;
     }
     
-    public SlovoSSJ(Long id, String slovo, Long idSkupina, Set<DefiniciaSSJ> definicie) {
+    public SlovoSSJ(Long id, String slovo, Long idSkupina, Set<MorfologickaDefiniciaSSJ> definicie) {
         this.id = id;
         this.slovo = slovo;
         this.idSkupina = idSkupina;

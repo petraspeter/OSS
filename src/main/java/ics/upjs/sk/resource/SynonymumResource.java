@@ -63,10 +63,7 @@ public class SynonymumResource {
     public Response vratSynoynmickyRad(
             @QueryParam("slovo") String slovo
     ) {
-        for (int i = 0; i < slovo.length(); i++) {
-            System.out.println(slovo.charAt(i));
-        }
-        List<VahaSlova> synonyma = synonymumService.vypocitajHodnotySynonym(slovo);
+        List<List<VahaSlova>> synonyma = synonymumService.vypocitajHodnotySynonym(slovo);
         return Response.ok(synonyma).build();
     }
     

@@ -2,6 +2,7 @@ package ics.upjs.sk.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ics.upjs.sk.core.ssj.DefiniciaSSJ;
+import ics.upjs.sk.core.ssj.MorfologickaDefiniciaSSJ;
 import ics.upjs.sk.core.ssj.SlovoSSJ;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class SsjDto {
     private Long idSkupina;
     
     @JsonProperty("definicie")
-    private Set<DefiniciaSSJ> definicie;
+    private Set<MorfologickaDefiniciaSSJ> definicie;
     
     public Long getId() {
         return id;
@@ -49,11 +50,11 @@ public class SsjDto {
         this.idSkupina = idSkupina;
     }
     
-    public Set<DefiniciaSSJ> getDefinicie() {
+    public Set<MorfologickaDefiniciaSSJ> getDefinicie() {
         return definicie;
     }
     
-    public void setDefinicie(Set<DefiniciaSSJ> definicie) {
+    public void setDefinicie(Set<MorfologickaDefiniciaSSJ> definicie) {
         this.definicie = definicie;
     }
     
@@ -74,7 +75,7 @@ public class SsjDto {
         );
     }
     
-    public SsjDto(Long id, String slovo, Long idSkupina, Set<DefiniciaSSJ> definicie) {
+    public SsjDto(Long id, String slovo, Long idSkupina, Set<MorfologickaDefiniciaSSJ> definicie) {
         this.id = id;
         this.slovo = slovo;
         this.idSkupina = idSkupina;
@@ -83,6 +84,5 @@ public class SsjDto {
     
     public SsjDto() {
     }
-    
     
 }
