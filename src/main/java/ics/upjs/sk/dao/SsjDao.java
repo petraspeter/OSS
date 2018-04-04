@@ -51,7 +51,7 @@ public class SsjDao  extends AbstractDAO<SlovoSSJ> {
     
     public List<SlovoSSJ> najdiVsetkySuvisiaceSlova(Long idVyznam, Long idSkupina) {
         List<SlovoSSJ> slova = currentSession().createCriteria(SlovoSSJ.class)
-                .add(Restrictions.eq("idSkupina", idVyznam)).list();
+                .add(Restrictions.eq("idSkupina", idSkupina)).list();
         List<SlovoSSJ> vysledneSlova = new ArrayList<>();
         for (SlovoSSJ slovoSSJ : slova) {
             if(!slovoSSJ.getIdVyznam().equals(idVyznam)) {
