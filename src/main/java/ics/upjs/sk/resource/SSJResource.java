@@ -4,6 +4,7 @@ import ics.upjs.sk.dto.SynonymumDto;
 import ics.upjs.sk.service.SSJService;
 import ics.upjs.sk.util.VahaSlova;
 import io.dropwizard.hibernate.UnitOfWork;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -32,10 +33,18 @@ public class SSJResource {
     public Response vratClenaRadu(
             @QueryParam("slovo") String slovo
     ) {
+        System.out.println(slovo);
          List<List<VahaSlova>> slova = ssjService.vypocitajVahuSuvisiacichSlov(slovo);
-        return Response.ok(slova).build();
+         List<VahaSlova> vyslednyZoznam = new ArrayList<>();
+         int pocitadlo = 0;
+         for (List<VahaSlova> list : slova) {
+             for (VahaSlova vahaSlova : list) {
+                 vahaSlova.setIdZoznamu(pocitadlo);
+                 vyslednyZoznam.add(vahaSlova);
+             }
+            pocitadlo++;
+        }
+        return Response.ok(vyslednyZoznam).build();
     }
-    
-    
-    
+        
 }

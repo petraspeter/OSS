@@ -30,10 +30,10 @@ public class SSJService {
     
     // na rozdiel od synonymickeho slovnika, nemame zaruceny synonymicky rad, konstanta bude teda rovnaka pre vsetky
     // slova, vaha odpoveda vahe stvrteho clena synonymickeho radu 0.95^4
-    private final double VAHA_SYNONYMA = 0.8145;
+    private final double VAHA_SYNONYMA = 0.95;
     // slova v skupine su slovne drhuy odvodene od podstatneho mena
     //vaha odpoveda vahe siedmeho clena synonymickeho radu 0.95^7
-    private final double VAHA_SKUPINY = 0.6983;
+    private final double VAHA_SKUPINY = 0.8145;
     
     private final SsjDao ssjDao;
     
@@ -54,13 +54,21 @@ public class SSJService {
         List<SlovoSSJ> vyhladaneSlova = ssjDao.najdiSlovo(slovo);
         for (SlovoSSJ slovoSSJ : vyhladaneSlova) {
             for (MorfologickaDefiniciaSSJ morfologickeDefinicieSSJ : slovoSSJ.getDefinicie()) {
-                System.out.println(morfologickeDefinicieSSJ.toString());
-                vyslednyZoznam.add(vypocitajVahuDefinicie(morfologickeDefinicieSSJ));
+                List<VahaSlova> aktualnyZoznam = vypocitajVahuDefinicie(morfologickeDefinicieSSJ);
+                if(aktualnyZoznam != null && !aktualnyZoznam.isEmpty()) {
+                    vyslednyZoznam.add(aktualnyZoznam);
+                }
             }
-            vyslednyZoznam.add(vypocitajVahuVyznamovoTotoznychSlov(
-                    ssjDao.najdiVsetkySynonymaSlova(slovoSSJ.getIdVyznam(), slovoSSJ.getId())));
-            vyslednyZoznam.add(vypocitajVahuSkupinovoSuvisiacichSlov(
-                    ssjDao.najdiVsetkySuvisiaceSlova(slovoSSJ.getIdVyznam(), slovoSSJ.getIdSkupina())));
+            List<VahaSlova> synonyma = vypocitajVahuVyznamovoTotoznychSlov(
+                    ssjDao.najdiVsetkySynonymaSlova(slovoSSJ.getIdVyznam(), slovoSSJ.getId()));
+            if(synonyma != null && !synonyma.isEmpty()) {
+                vyslednyZoznam.add(synonyma);
+            }
+            List<VahaSlova> suvisiaceSlova = vypocitajVahuSkupinovoSuvisiacichSlov(
+                    ssjDao.najdiVsetkySuvisiaceSlova(slovoSSJ.getIdVyznam(), slovoSSJ.getIdSkupina()));
+            if(suvisiaceSlova != null && !suvisiaceSlova.isEmpty()) {
+                vyslednyZoznam.add(suvisiaceSlova);
+            }
         }
         return vyslednyZoznam;
     }
@@ -68,17 +76,17 @@ public class SSJService {
     
     private List<VahaSlova> vypocitajVahuDefinicie(MorfologickaDefiniciaSSJ morfologickeDefinicieSSJ) {
         List<VahaSlova> suvisiaceSlova = new ArrayList();
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPodstatneSingular(), VAHA_PODSTATNE));
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPodstatnePlural(), VAHA_PODSTATNE));
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPodstatnePomnozne(), VAHA_PODSTATNE));
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPridavneSingular(), VAHA_PRIDAVNE));
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPridavnePlural(), VAHA_PRIDAVNE));
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getCislovkaSingular(), VAHA_CISLOVKY));
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getCislovkaPlural(), VAHA_CISLOVKY));
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getZamenoSingular(), VAHA_ZAMENA));
-        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getZamenoPlural(), VAHA_ZAMENA));
-        suvisiaceSlova.addAll(vypocitajVahuNesklonovatelnehoSlova(morfologickeDefinicieSSJ.getSlovesa(), VAHA_SLOVESA));
-        suvisiaceSlova.addAll(vypocitajVahuNesklonovatelnehoSlova(morfologickeDefinicieSSJ.getPrislovka(), VAHA_PRISLOVKY));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPodstatneSingular(), VAHA_PODSTATNE, "pod. m."));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPodstatnePlural(), VAHA_PODSTATNE, "pod. m."));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPodstatnePomnozne(), VAHA_PODSTATNE, "pod. m."));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPridavneSingular(), VAHA_PRIDAVNE, "prid. m."));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getPridavnePlural(), VAHA_PRIDAVNE, "prid. m."));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getCislovkaSingular(), VAHA_CISLOVKY, "cisl."));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getCislovkaPlural(), VAHA_CISLOVKY, "cisl."));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getZamenoSingular(), VAHA_ZAMENA, "zam."));
+        suvisiaceSlova.addAll(vypocitajVahuSklonovatelnehoSlova(morfologickeDefinicieSSJ.getZamenoPlural(), VAHA_ZAMENA, "zam."));
+        suvisiaceSlova.addAll(vypocitajVahuNesklonovatelnehoSlova(morfologickeDefinicieSSJ.getSlovesa(), VAHA_SLOVESA, "slov."));
+        suvisiaceSlova.addAll(vypocitajVahuNesklonovatelnehoSlova(morfologickeDefinicieSSJ.getPrislovka(), VAHA_PRISLOVKY, "prisl."));
         return  suvisiaceSlova;
     }
     
@@ -98,7 +106,7 @@ public class SSJService {
         return  suvisiaceSlova;
     }
     
-    private List<VahaSlova> vypocitajVahuSklonovatelnehoSlova(SklonovatelneSlovo sklonovatelneSlovo, double koeficientSlovnehoDruhu) {
+    private List<VahaSlova> vypocitajVahuSklonovatelnehoSlova(SklonovatelneSlovo sklonovatelneSlovo, double koeficientSlovnehoDruhu, String slovnyDruh) {
         Map<String, List<Double>> mapa = new HashMap<>();
         double koeficientPadu = 1.0;
         mapa = vypocitajVahuPadu(sklonovatelneSlovo.getNominativ(), mapa, koeficientSlovnehoDruhu, koeficientPadu);
@@ -112,11 +120,11 @@ public class SSJService {
         mapa = vypocitajVahuPadu(sklonovatelneSlovo.getLokal(), mapa, koeficientSlovnehoDruhu, koeficientPadu);
         koeficientPadu = koeficientPadu * KOEFICIENT_PADU;
         mapa = vypocitajVahuPadu(sklonovatelneSlovo.getInstrumental(), mapa, koeficientSlovnehoDruhu, koeficientPadu);
-        return  vratZoznamOhodnotenychSlovZMapy(mapa);
+        return  vratZoznamOhodnotenychSlovZMapy(mapa, slovnyDruh);
     }
     
     
-    private List<VahaSlova> vratZoznamOhodnotenychSlovZMapy(Map<String, List<Double>> mapa) {
+    private List<VahaSlova> vratZoznamOhodnotenychSlovZMapy(Map<String, List<Double>> mapa, String slovnyDruh) {
         List<VahaSlova> vyslednyZoznam = new ArrayList<>();
         Iterator<Map.Entry<String, List<Double>>> it = mapa.entrySet().iterator();
         while (it.hasNext()) {
@@ -125,7 +133,7 @@ public class SSJService {
             for (Double vaha : par.getValue()) {
                 sucetVah += vaha;
             }
-            vyslednyZoznam.add(new VahaSlova(par.getKey(), sucetVah / par.getValue().size()));
+            vyslednyZoznam.add(new VahaSlova(par.getKey(), sucetVah / par.getValue().size(), slovnyDruh));
             // pridat sem slovny druh a cislo
             // vyslednyZoznam.add(new VahaSlova(par.getKey(), sucetVah / par.getValue().size(), ""));
         }
@@ -148,12 +156,12 @@ public class SSJService {
         return mapa;
     }
     
-    private List<VahaSlova> vypocitajVahuNesklonovatelnehoSlova(String slova, double  koeficientSlovnehoDruhu) {
+    private List<VahaSlova> vypocitajVahuNesklonovatelnehoSlova(String slova, double  koeficientSlovnehoDruhu, String slovnyDruh) {
         List<VahaSlova> vyslednyZoznam = new ArrayList<>();
         Scanner citacSlov = new Scanner(slova);
         citacSlov.useDelimiter(";");
         while (citacSlov.hasNext()) {
-            vyslednyZoznam.add(new VahaSlova(citacSlov.next(), koeficientSlovnehoDruhu));
+            vyslednyZoznam.add(new VahaSlova(citacSlov.next(), koeficientSlovnehoDruhu, slovnyDruh));
             // pridat sem slovny druh
             // vyslednyZoznam.add(new VahaSlova(citacSlov.next(), koeficientSlovnehoDruhu, ""));
         }

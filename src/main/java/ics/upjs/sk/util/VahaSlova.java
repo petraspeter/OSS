@@ -17,6 +17,11 @@ public class VahaSlova {
     @JsonProperty("poznamka")
     private String poznamka;
     
+    
+    @JsonProperty("idZoznamu")
+    private Integer idZoznamu;
+    
+    
     public VahaSlova() {
     }
     
@@ -53,6 +58,19 @@ public class VahaSlova {
     
     public void setPoznamka(String poznamka) {
         this.poznamka = poznamka;
+    }
+
+    public Integer getIdZoznamu() {
+        return idZoznamu;
+    }
+
+    public void setIdZoznamu(Integer idZoznamu) {
+        this.idZoznamu = idZoznamu;
+    }
+
+    @Override
+    public String toString() {
+        return "VahaSlova{" + "slovo=" + slovo + ", vaha=" + vaha + ", poznamka=" + poznamka + ", idZoznamu=" + idZoznamu + '}';
     }
     
 }
